@@ -1,0 +1,6 @@
+
+how to union cache_t variable from SDVolume.h with tvbuffer? (set USE_MULTIPLE_CARDS as below to remove static definitions)
+
+does USE_MULTIPLE_CARDS in SDVolume.h remove static assigment of cache_t buffer? Change #define in SdFatConfig.h
+
+use cache_t space for tvbuffer?  get pointer to SDVolume from SDFat, and then pointer to cache_t from SDVolume.

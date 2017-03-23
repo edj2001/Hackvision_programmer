@@ -391,7 +391,7 @@ signed char  xMove = 1;
 signed char yMove = -1;
 byte xLine = 42;
 byte yLine = 47;
-void loop(void)
+void TVloop(void)
 {
   byte i;
 

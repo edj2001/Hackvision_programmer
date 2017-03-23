@@ -3,7 +3,7 @@
 
 //begin tv code
 
-//#include <TVout.h>
+#include "TVoutSPI.h"
 #include <fontALL.h>
 #include "schematic.h"
 #include "TVOlogo.h"

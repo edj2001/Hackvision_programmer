@@ -3,8 +3,8 @@
 //#include <Arduino.h>
 //#include "programmer.h"
 #include <avr/pgmspace.h>
-#include <TVout.h>
-TVout TV;
+//#include <TVout.h>
+//TVout TV;
 
 // for SDFat library see: https://github.com/greiman/SdFat
 // modify #define USE_MULTIPLE_CARDS 1 in SDFatConfig.h to get rid of static cache definitions
@@ -14,7 +14,7 @@ TVout TV;
 #ifdef UseUnion
   union uvar { 
     SdFat sd; 
-    unsigned char TVBuffer[640];
+    unsigned char TVBuffer[25*40];
     uvar::uvar() {
       }
     };
@@ -24,7 +24,7 @@ TVout TV;
   struct uvar {
   // file system object
   SdFat sd;
-  unsigned char TVBuffer[640];
+  unsigned char TVBuffer[25*40];
   };
   uvar usdc;
 #endif

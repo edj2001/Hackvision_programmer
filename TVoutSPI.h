@@ -11,6 +11,12 @@
  *
  * Dave Schmenk
  */
+
+void active_line(void);
+void blank_line(void);
+void scrollscr(void);
+void clrscr(byte);
+ 
 //
 // Timing settings for NTSC
 //
@@ -52,14 +58,19 @@
 #define CELL_HEIGHT  8
 byte xpos=0;
 byte ypos=0;
-char videomem[VID_WIDTH*VID_HEIGHT];
+//char videomem[VID_WIDTH*VID_HEIGHT];
 //
 // rendering values
 //
-char *videoptr = videomem;
+//
+//char *videoptr = videomem;
+char *videoptr;
 int scanline=0;
-void (*line_handler)(void) = &blank_line;
 volatile byte vblank=0;
+
+
+void (*line_handler)(void) = &blank_line;
+
 //
 // character definitions
 //
@@ -76,37 +87,6 @@ PROGMEM const byte charROM [1024] = {
 /*
  * Set up UART SPI master mode and timers for sync pulses
  */
-void TVsetup(void)
-{
-  cli();
-  UBRR0 = 0; // must be zero before enabling the transmitter
-  XCK0_DDR  |= _BV(XCK0); // set XCK pin as output to enable master mode
-  UCSR0C     = _BV (UMSEL00) | _BV (UMSEL01);  // SPI master mode
-  DDR_VID   |= _BV(VID_PIN);
-  DDR_SYNC  |= _BV(SYNC_PIN);
-  PORT_VID  &= ~_BV(VID_PIN);
-  PORT_SYNC |= _BV(SYNC_PIN);
-  TCCR1A     = _BV(COM1A1) | _BV(COM1A0) | _BV(WGM11); // inverted fast pwm mode on timer 2
-  TCCR1B     = _BV(WGM13) | _BV(WGM12) | _BV(CS10);
-  ICR1       = _NTSC_CYCLES_SCANLINE;
-  OCR1A      = _CYCLES_HSYNC;
-  OCR1B      = _NTSC_CYCLES_OUTPUT_START - 79;
-  TIMSK1     = _BV(OCIE1B);
-  TIMSK0     = 0; // turn timer0 off!
-  SMCR       = _BV(SE); // allow IDLE sleep mode
-  sei();
-  //
-  // Clear the video buffer and print out sample text
-  //
-  chrout(12);
-  printstr("0123456789012345678901234567890123456789");
-  printstr("\n             Video SPI Demo\n\n");
-  for (byte i = ' '; i < 128; i++)
-    chrout(i);
-  box(0, 9, 19, 15);
-  clrrect(20,9, 19, 15, 0);
-  box(20,9,19,15);
-}
 //
 // Handle scanline timing
 //
@@ -120,27 +100,7 @@ ISR(TIMER1_COMPB_vect)
   line_handler();
   scanline++;
 }
-//
-// Inactive scanlines
-//
-void blank_line(void)
-{
-  if (scanline == _NTSC_LINE_STOP_VSYNC)
-  {
-    OCR1A = _CYCLES_HSYNC;
-  }
-  else if ( scanline == _NTSC_LINE_MID - (VID_HEIGHT*CELL_HEIGHT)/2)
-  {
-    TIMSK1       = _BV(OCIE1A) | _BV(OCIE1B);
-    videoptr     = videomem;
-    line_handler = &active_line;
-  }
-  else if (scanline > _NTSC_LINE_FRAME)
-  {
-    OCR1A = _CYCLES_VSYNC;
-    scanline = 0;
-  }
-}
+
 //
 // Active scanlines
 //
@@ -185,6 +145,30 @@ void active_line(void)
     }
   }
 }
+
+//
+// Inactive scanlines
+//
+void blank_line(void)
+{
+  if (scanline == _NTSC_LINE_STOP_VSYNC)
+  {
+    OCR1A = _CYCLES_HSYNC;
+  }
+  else if ( scanline == _NTSC_LINE_MID - (VID_HEIGHT*CELL_HEIGHT)/2)
+  {
+    TIMSK1       = _BV(OCIE1A) | _BV(OCIE1B);
+    videoptr     = videomem;
+    line_handler = &active_line;
+  }
+  else if (scanline > _NTSC_LINE_FRAME)
+  {
+    OCR1A = _CYCLES_VSYNC;
+    scanline = 0;
+  }
+}
+
+
 /*
  * Character output routines.
  */
@@ -382,6 +366,40 @@ void line(signed char x1, signed char y1, signed char x2, signed char y2, void (
   }
   oppix(x2, y2);
 }
+
+void TVsetup(void)
+{
+  cli();
+  UBRR0 = 0; // must be zero before enabling the transmitter
+  XCK0_DDR  |= _BV(XCK0); // set XCK pin as output to enable master mode
+  UCSR0C     = _BV (UMSEL00) | _BV (UMSEL01);  // SPI master mode
+  DDR_VID   |= _BV(VID_PIN);
+  DDR_SYNC  |= _BV(SYNC_PIN);
+  PORT_VID  &= ~_BV(VID_PIN);
+  PORT_SYNC |= _BV(SYNC_PIN);
+  TCCR1A     = _BV(COM1A1) | _BV(COM1A0) | _BV(WGM11); // inverted fast pwm mode on timer 2
+  TCCR1B     = _BV(WGM13) | _BV(WGM12) | _BV(CS10);
+  ICR1       = _NTSC_CYCLES_SCANLINE;
+  OCR1A      = _CYCLES_HSYNC;
+  OCR1B      = _NTSC_CYCLES_OUTPUT_START - 79;
+  TIMSK1     = _BV(OCIE1B);
+  TIMSK0     = 0; // turn timer0 off!
+  SMCR       = _BV(SE); // allow IDLE sleep mode
+  sei();
+  //
+  // Clear the video buffer and print out sample text
+  //
+  chrout(12);
+  printstr("0123456789012345678901234567890123456789");
+  printstr("\n             Video SPI Demo\n\n");
+  for (byte i = ' '; i < 128; i++)
+    chrout(i);
+  box(0, 9, 19, 15);
+  clrrect(20,9, 19, 15, 0);
+  box(20,9,19,15);
+}
+
+
 /*
  * Run main loop
  */

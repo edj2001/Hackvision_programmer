@@ -5,5 +5,8 @@
 
 
 #include "TVoutSPI.h"
-
-TVloop();
+void ui() {
+  char *videoptr = usdc.TVBuffer;
+  TVsetup();
+  TVloop();
+}

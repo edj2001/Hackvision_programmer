@@ -38,7 +38,8 @@
 
 
 boolean inProgrammingMode() {
-  return digitalRead(1);
+//  return digitalRead(1);
+  return 1;  //temporary for debug
 }
 
 void setup(){
@@ -48,6 +49,6 @@ void setup(){
 void loop(){
   if (inProgrammingMode()) findFiles();
   if (inProgrammingMode()) ui();
-  if (inProgrammingMode()) burn();
+  //if (inProgrammingMode()) burn();
   
   }

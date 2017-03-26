@@ -65,6 +65,7 @@ byte ypos=0;
 //
 //char *videoptr = videomem;
 char *videoptr;
+char *videomemi=usdc.TVBuffer;
 int scanline=0;
 volatile byte vblank=0;
 
@@ -158,7 +159,8 @@ void blank_line(void)
   else if ( scanline == _NTSC_LINE_MID - (VID_HEIGHT*CELL_HEIGHT)/2)
   {
     TIMSK1       = _BV(OCIE1A) | _BV(OCIE1B);
-    videoptr     = videomem;
+//    videoptr     = videomem;
+    videoptr     = videomemi;
     line_handler = &active_line;
   }
   else if (scanline > _NTSC_LINE_FRAME)
@@ -191,7 +193,8 @@ void chrout(char ascii)
       break;      
     default:
     if (ascii >= ' ' && ascii < 128) {
-      videomem[xpos+ypos*VID_WIDTH] = ascii;
+//      videomem[xpos+ypos*VID_WIDTH] = ascii;
+      *(videomemi+(xpos+ypos*VID_WIDTH)) = ascii;
       xpos++;
       if (xpos>=VID_WIDTH) {
        xpos=0;
@@ -208,12 +211,14 @@ void chrout(char ascii)
 void clrscr(byte val)
 {
   for (int i = VID_WIDTH*VID_HEIGHT-1; i >= 0; --i)
-    videomem[i] = val;
+//    videomem[i] = val;
+    *(videomemi+i) = val;
 }
 void clrrect(byte x, byte y, byte w, byte h, byte v)
 {
   byte i, j;
-  char *vptr = &videomem[x + y * VID_WIDTH];
+//  char *vptr = &videomem[x + y * VID_WIDTH];
+  char *vptr = videomemi+(x + y * VID_WIDTH);
   for (j = 0; j < h; j++)
   {
     for (i = 0; i < w; i++)
@@ -224,7 +229,8 @@ void clrrect(byte x, byte y, byte w, byte h, byte v)
 void box(byte x, byte y, byte w, byte h)
 {
   byte i, j;
-  char *vptr = &videomem[x + y * VID_WIDTH];
+//  char *vptr = &videomem[x + y * VID_WIDTH];
+  char *vptr = videomemi+(x + y * VID_WIDTH);
   *vptr++ = 0x16;
   for (i = 1; i < w; i++)
     *vptr++ = 0x1A;
@@ -244,9 +250,11 @@ void box(byte x, byte y, byte w, byte h)
 void scrollscr(void)
 {
   for (unsigned int i=VID_WIDTH; i < VID_WIDTH*VID_HEIGHT; i++)
-    videomem[i-VID_WIDTH]=videomem[i];
+//    videomem[i-VID_WIDTH]=videomem[i];
+    *(videomemi+i-VID_WIDTH)=*(videomemi+i);
   for (unsigned int i=VID_WIDTH*VID_HEIGHT - VID_WIDTH; i < VID_WIDTH*VID_HEIGHT; i++)
-    videomem[i]=' ';
+//    videomem[i]=' ';
+    *(videomemi+i)=' ';
 }
 void printstr(char *string)
 {
@@ -274,7 +282,8 @@ void setpix(signed char x, signed char y)
   xChar = x >> 1;
   yChar = y >> 1;
   blockChar = 1 << ((x & 1) | ((y & 1) << 1));
-  videomem[xChar + yChar * VID_WIDTH] |= blockChar;
+//  videomem[xChar + yChar * VID_WIDTH] |= blockChar;
+  *(videomemi+(xChar + yChar * VID_WIDTH)) |= blockChar;
 }
 void clrpix(signed char x, signed char y)
 {
@@ -285,7 +294,8 @@ void clrpix(signed char x, signed char y)
   xChar = x >> 1;
   yChar = y >> 1;
   blockChar = 1 << ((x & 1) | ((y & 1) << 1));
-  videomem[xChar + yChar * VID_WIDTH] &= ~blockChar;
+//  videomem[xChar + yChar * VID_WIDTH] &= ~blockChar;
+  *(videomemi+(xChar + yChar * VID_WIDTH)) &= ~blockChar;
 }
 void xorpix(signed char x, signed char y)
 {
@@ -296,7 +306,8 @@ void xorpix(signed char x, signed char y)
   xChar = x >> 1;
   yChar = y >> 1;
   blockChar = 1 << ((x & 1) | ((y & 1) << 1));
-  videomem[xChar + yChar * VID_WIDTH] ^= blockChar;
+//  videomem[xChar + yChar * VID_WIDTH] ^= blockChar;
+  *(videomemi+(xChar + yChar * VID_WIDTH)) ^= blockChar;
 }
 void line(signed char x1, signed char y1, signed char x2, signed char y2, void (*oppix)(signed char x, signed char y))
 {
@@ -386,62 +397,9 @@ void TVsetup(void)
   TIMSK0     = 0; // turn timer0 off!
   SMCR       = _BV(SE); // allow IDLE sleep mode
   sei();
-  //
-  // Clear the video buffer and print out sample text
-  //
-  chrout(12);
-  printstr("0123456789012345678901234567890123456789");
-  printstr("\n             Video SPI Demo\n\n");
-  for (byte i = ' '; i < 128; i++)
-    chrout(i);
-  box(0, 9, 19, 15);
-  clrrect(20,9, 19, 15, 0);
-  box(20,9,19,15);
 }
 
 
-/*
- * Run main loop
- */
-byte xTab = 2;
-byte yTab = 4;
-signed char  xMove = 1;
-signed char yMove = -1;
-byte xLine = 42;
-byte yLine = 47;
-void TVloop(void)
-{
-  byte i;
-
-  if (vblank) // only update every frame
-  {
-    gotoxy(xTab + 1, yTab + 10);
-    printstr("        ");
-    xTab = xTab + xMove;
-    if (xTab == 0 || xTab == 10)
-      xMove = -xMove;
-    yTab = yTab + yMove;
-    if (yTab == 0 || yTab == 13 )
-      yMove = -yMove;
-    gotoxy(xTab + 1, yTab + 10);
-    printstr("Arduino!");
-    line(42, 20, xLine, yLine, xorpix);
-    if (xLine == 77 && yLine == 20)
-    {
-      xLine = 42;
-      yLine = 47;
-    }
-    else
-    {
-      if (++xLine > 77)
-      {
-        xLine = 77;
-        yLine--;
-      }
-    }
-    vblank=0;
-  }
-}
 
 
 

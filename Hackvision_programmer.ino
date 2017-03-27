@@ -49,6 +49,7 @@ void setup(){
 void loop(){
   if (inProgrammingMode()) findFiles();
   if (inProgrammingMode()) ui();
-  //if (inProgrammingMode()) burn();
+  while (1) {}
+  if (inProgrammingMode()) burn();
   
   }

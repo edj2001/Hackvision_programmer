@@ -10,6 +10,13 @@
 // modify #define USE_MULTIPLE_CARDS 1 in SDFatConfig.h to get rid of static cache definitions
 #include <SdFat.h>
 
+#define enableBurningPin A2
+#define programmingModePin A3
+#define fireButton 2
+#define scrollUpButton 3
+#define scrollDownButton 4
+
+
 #define UseUnion
 #ifdef UseUnion
   union uvar { 
@@ -38,12 +45,40 @@
 
 
 boolean inProgrammingMode() {
-//  return digitalRead(1);
+//  return digitalRead(programmingModePin);
   return 1;  //temporary for debug
 }
 
+boolean enableBurning(void) {
+    return digitalRead(enableBurningPin);
+}
+
+boolean fireButtonDown(void) {
+    static boolean lastFireButtonPressed;
+    return digitalRead(enableBurningPin);
+}
+
+
+boolean fireButtonPressed(void) {
+    static boolean lastFireButtonPressed;
+    return digitalRead(enableBurningPin);
+}
+
+
+boolean scrollUpButtonPressed(void) {
+    
+    static boolean lastscrollUpButtonPressed;
+    return digitalRead(enableBurningPin);
+}
+    
+
+boolean scrollDownButtonPressed(void) {
+    static boolean lastScrollDownButtonPressed;
+    return digitalRead(enableBurningPin);
+}
+    
 void setup(){
-  
+  // configure inputs
   }
 
 void loop(){

@@ -32,6 +32,12 @@ void ui() {
 }
 
 void ui_displayResults(){
-  
+    TVsetup();
+  //
+  // Clear the video buffer and print out titles
+  //
+  chrout(12);
+  displayTitles();
+ 
 }
 

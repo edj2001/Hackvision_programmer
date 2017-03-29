@@ -45,24 +45,31 @@
 
 
 boolean inProgrammingMode() {
-//  return digitalRead(programmingModePin);
+//  return !digitalRead(programmingModePin);
   return 1;  //temporary for debug
 }
 
 boolean enableBurning(void) {
-    return digitalRead(enableBurningPin);
+    return !digitalRead(enableBurningPin);
 }
 
 boolean fireButtonDown(void) {
-    static boolean lastFireButtonPressed;
-    return digitalRead(enableBurningPin);
+    return !digitalRead(fireButton);
 }
 
+boolean scrollDownButtonDown(void) {
+    return !digitalRead(scrollDownButton);
+}
+boolean scrollUpButtonDown(void) {
+    return !digitalRead(scrollUpButton);
+}
 
 boolean fireButtonPressed(void) {
     static boolean lastFireButtonPressed;
-    return digitalRead(enableBurningPin);
-}
+    boolean result;
+    result = fireButtonDown()&&lastFireButtonPressed;
+    lastFireButtonPressed = fireButtonDown();
+    return result;}
 
 
 boolean scrollUpButtonPressed(void) {
@@ -74,11 +81,16 @@ boolean scrollUpButtonPressed(void) {
 
 boolean scrollDownButtonPressed(void) {
     static boolean lastScrollDownButtonPressed;
-    return digitalRead(enableBurningPin);
+    boolean result;
+    result = scrollDownButtonDown()&&lastScrollDownButtonPressed;
+    lastScrollDownButtonPressed = scrollDownButtonDown();
+    return result;
 }
     
 void setup(){
   // configure inputs
+  pinMode(enableBurningPin, INPUT_PULLUP);
+  pinMode(programmingModePin, INPUT_PULLUP);
   }
 
 void loop(){

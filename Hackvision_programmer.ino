@@ -67,7 +67,7 @@ boolean scrollUpButtonDown(void) {
 boolean fireButtonPressed(void) {
     static boolean lastFireButtonPressed;
     boolean result;
-    result = fireButtonDown()&&lastFireButtonPressed;
+    result = fireButtonDown()&&!lastFireButtonPressed;
     lastFireButtonPressed = fireButtonDown();
     return result;}
 
@@ -82,7 +82,7 @@ boolean scrollUpButtonPressed(void) {
 boolean scrollDownButtonPressed(void) {
     static boolean lastScrollDownButtonPressed;
     boolean result;
-    result = scrollDownButtonDown()&&lastScrollDownButtonPressed;
+    result = scrollDownButtonDown()&&!lastScrollDownButtonPressed;
     lastScrollDownButtonPressed = scrollDownButtonDown();
     return result;
 }
@@ -91,6 +91,9 @@ void setup(){
   // configure inputs
   pinMode(enableBurningPin, INPUT_PULLUP);
   pinMode(programmingModePin, INPUT_PULLUP);
+  pinMode(fireButton, INPUT_PULLUP);
+  pinMode(scrollUpButton, INPUT_PULLUP);
+  pinMode(scrollDownButton, INPUT_PULLUP);
   }
 
 void loop(){
@@ -98,5 +101,7 @@ void loop(){
   if (inProgrammingMode()) ui();
   while (1) {}
   if (inProgrammingMode()) burn();
+  if (inProgrammingMode()) ui_displayResults();
+  //if (!inProgrammingMode()) sleep();
   
   }

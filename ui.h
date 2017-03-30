@@ -1,6 +1,7 @@
 
 #include "TVoutSPI.h"
 
+char selectedFileName[50] = "GAME.HEX";
 void displayTitles()
 {
   clrrect(0,0,3,40,' ');
@@ -8,6 +9,14 @@ void displayTitles()
   printstr("\n             Version 1.0");
 
 }
+
+void displaySelection(){
+  clrrect(24,0,24,40,' ');
+  gotoPosition(24,0);
+  printstr("  Press fire to burn ");
+  printstr(selectedFileName);
+}
+
 void ui() {
   byte selectedIndex;
   byte newSelectedIndex;

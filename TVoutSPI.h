@@ -208,6 +208,12 @@ void chrout(char ascii)
     }
    }  
 }
+
+void gotoPosition(byte newx, byte newy){
+  xpos = newx;
+  ypos = newy;
+}
+
 void clrscr(byte val)
 {
   for (int i = VID_WIDTH*VID_HEIGHT-1; i >= 0; --i)

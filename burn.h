@@ -215,7 +215,7 @@ const byte RESET = MSPIM_SS;
 const uint8_t chipSelect = SS;
 
 const unsigned long NO_PAGE = 0xFFFFFFFF;
-const int MAX_FILENAME = 13;
+const int MAX_FILENAME = 50;
 
 /*
 #if CROSSROADS_PROGRAMMING_BOARD
@@ -1143,10 +1143,10 @@ void burn ()
 {
 
   // wait till they press the start switch
-  while (digitalRead (startSwitch) == HIGH)
-    {
-    strcpy (name, wantedFile);   // use fixed name
-    }  // end of waiting for switch press
+  //while (digitalRead (startSwitch) == HIGH)
+    //{
+    //strcpy (name, wantedFile);   // use fixed name
+    //}  // end of waiting for switch press
     
  
   if (!startProgramming ())

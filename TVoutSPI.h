@@ -220,6 +220,10 @@ void clrscr(byte val)
 //    videomem[i] = val;
     *(videomemi+i) = val;
 }
+void clrscr(void)
+{
+  clrscr(' ');
+}
 void clrrect(byte x, byte y, byte w, byte h, byte v)
 {
   byte i, j;
@@ -383,6 +387,15 @@ void line(signed char x1, signed char y1, signed char x2, signed char y2, void (
   }
   oppix(x2, y2);
 }
+
+void TVdelay_frame(unsigned int x) {
+  while (x) {
+    while (!vblank);
+    vblank = 0;
+    x--;
+  }
+} 
+
 
 void TVsetup(void)
 {

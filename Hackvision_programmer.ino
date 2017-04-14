@@ -36,14 +36,6 @@
   uvar usdc;
 #endif
 
-
-#include "find_files.h"
-
-#include "ui.h"
-
-#include "burn.h"
-
-
 boolean inProgrammingMode() {
 //  return !digitalRead(programmingModePin);
   return 1;  //temporary for debug
@@ -52,6 +44,13 @@ boolean inProgrammingMode() {
 boolean enableBurning(void) {
     return !digitalRead(enableBurningPin);
 }
+
+#include "burn.h"
+
+#include "find_files.h"
+
+#include "ui.h"
+
 
 boolean fireButtonDown(void) {
     return !digitalRead(fireButton);
@@ -97,11 +96,16 @@ void setup(){
   }
 
 void loop(){
+  if (inProgrammingMode()) ui_splash();
   if (inProgrammingMode()) findFiles();
   if (inProgrammingMode()) ui();
-  while (1) {}
-  if (inProgrammingMode()) burn();
+  if (inProgrammingMode() && enableBurning()) 
+  {
+    strcpy(name,selectedFileName);
+    burn();
+  }
   if (inProgrammingMode()) ui_displayResults();
+  while (1){};
   //if (!inProgrammingMode()) sleep();
   
   }

@@ -7,6 +7,14 @@ void displayTitles()
   clrrect(0,0,3,40,' ');
   printstr("         Hackvision Programmer");
   printstr("\n             Version 1.0");
+  if (enableBurning())
+  {
+    printstr(" Program Burning Enabled \n");
+  }
+  else 
+  {
+    printstr(" Program Burning Disabled \n");
+  }
 
 }
 
@@ -26,18 +34,21 @@ void ui() {
   //
   // Clear the video buffer and print out titles
   //
-  chrout(12);
+  clrscr();
   displayTitles();
   printstr("\n       Please select a game:\n");
   
-  while (1) {
+  while (!fireButtonPressed()) {
     if (vblank) // only update every frame
     {
-      
+
+      displaySelection();
       vblank=0;
     }
 
   }
+  //copy selected file name to file to burn
+  
 }
 
 void ui_displayResults(){
@@ -45,8 +56,17 @@ void ui_displayResults(){
   //
   // Clear the video buffer and print out titles
   //
-  chrout(12);
+  clrscr();
   displayTitles();
  
+}
+
+void ui_splash() {
+  //show the splash screen
+  TVsetup();
+  clrscr();
+  displayTitles();
+  printstr("\n Please wait for file search\n");
+  TVdelay_frame(300);
 }
 

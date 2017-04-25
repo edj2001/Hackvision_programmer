@@ -459,6 +459,42 @@ void show7SegmentMessage (char * what)
 #endif //  CROSSROADS_PROGRAMMING_BOARD
 */
 
+void ShowMessage (const byte which)
+  {
+/*
+  // now flash an appropriate sequence
+  switch (which)
+     {
+      // problems with SD card or finding the file
+      case MSG_NO_SD_CARD:                      blink (errorLED, noLED, 1, 5); break;
+      case MSG_CANNOT_OPEN_FILE:                blink (errorLED, noLED, 2, 5); break;
+      
+      // problems reading the .hex file
+      case MSG_LINE_TOO_LONG:                   blink (errorLED, workingLED, 1, 5); break;
+      case MSG_LINE_TOO_SHORT:                  blink (errorLED, workingLED, 2, 5); break;
+      case MSG_LINE_DOES_NOT_START_WITH_COLON:  blink (errorLED, workingLED, 3, 5); break;
+      case MSG_INVALID_HEX_DIGITS:              blink (errorLED, workingLED, 4, 5); break;
+      case MSG_BAD_SUMCHECK:                    blink (errorLED, workingLED, 5, 5); break;
+      case MSG_LINE_NOT_EXPECTED_LENGTH:        blink (errorLED, workingLED, 6, 5); break;
+      case MSG_UNKNOWN_RECORD_TYPE:             blink (errorLED, workingLED, 7, 5); break;
+      case MSG_NO_END_OF_FILE_RECORD:           blink (errorLED, workingLED, 8, 5); break;
+      
+      // problems with the file contents
+      case MSG_FILE_TOO_LARGE_FOR_FLASH:        blink (errorLED, workingLED, 9, 5); break;
+      
+      // problems programming the chip
+      case MSG_CANNOT_ENTER_PROGRAMMING_MODE:  blink (errorLED, noLED, 3, 5); break;
+      case MSG_NO_BOOTLOADER_FUSE:             blink (errorLED, noLED, 4, 5); break;
+      case MSG_CANNOT_FIND_SIGNATURE:          blink (errorLED, noLED, 5, 5); break;
+      case MSG_UNRECOGNIZED_SIGNATURE:         blink (errorLED, noLED, 6, 5); break;
+      case MSG_BAD_START_ADDRESS:              blink (errorLED, noLED, 7, 5); break;
+      case MSG_VERIFICATION_ERROR:             blink (errorLED, noLED, 8, 5); break;
+      case MSG_FLASHED_OK:                     blink (readyLED, noLED, 3, 10); break;
+      
+     default:                                  blink (errorLED, 10, 10);  break;   // unknown error
+     }  // end of switch on which message 
+*/
+  }  // end of ShowMessage
  
   
 // Bit Banged SPI transfer
@@ -664,7 +700,7 @@ bool processLine (const char * pLine, const byte action)
   {
   if (*pLine++ != ':')
      {
-    // ShowMessage (MSG_LINE_DOES_NOT_START_WITH_COLON);
+     ShowMessage (MSG_LINE_DOES_NOT_START_WITH_COLON);
      return true;  // error
      } 
   
@@ -682,7 +718,7 @@ bool processLine (const char * pLine, const byte action)
     // can't fit?
     if (bytesInLine >= maxHexData)
       {
-      //ShowMessage (MSG_LINE_TOO_LONG);
+      ShowMessage                     (MSG_LINE_TOO_LONG);
       return true;
       } // end if too long
 
@@ -693,7 +729,7 @@ bool processLine (const char * pLine, const byte action)
     
   if (bytesInLine < 5)
     {
-    //ShowMessage (MSG_LINE_TOO_SHORT);
+    ShowMessage                     (MSG_LINE_TOO_SHORT);
     return true;  
     } 
 
@@ -709,7 +745,7 @@ bool processLine (const char * pLine, const byte action)
   // check sumcheck
   if (sumCheck != hexBuffer [bytesInLine - 1])
     {
-    //ShowMessage (MSG_BAD_SUMCHECK);
+    ShowMessage                     (MSG_BAD_SUMCHECK);
     return true;
     }
   
@@ -720,7 +756,7 @@ bool processLine (const char * pLine, const byte action)
   //   length / address (2) / transaction type / sumcheck
   if (len != (bytesInLine - 5))
     {
-    //ShowMessage (MSG_LINE_NOT_EXPECTED_LENGTH);
+    ShowMessage                     (MSG_LINE_NOT_EXPECTED_LENGTH);
     return true;
     }
     
@@ -772,7 +808,7 @@ bool processLine (const char * pLine, const byte action)
       break;
         
     default:  
-      //ShowMessage (MSG_UNKNOWN_RECORD_TYPE);
+      ShowMessage                     (MSG_UNKNOWN_RECORD_TYPE);
       return true;  
     }  // end of switch on recType
     
@@ -802,7 +838,7 @@ bool readHexFile (const char * fName, const byte action)
   // check for open error
   if (!sdin.is_open()) 
     {
-   // ShowMessage (MSG_CANNOT_OPEN_FILE);
+    ShowMessage (MSG_CANNOT_OPEN_FILE);
     return true;
     }
 
@@ -828,7 +864,7 @@ bool readHexFile (const char * fName, const byte action)
     int count = sdin.gcount();
     if (sdin.fail()) 
       {
-     // ShowMessage (MSG_LINE_TOO_LONG);
+      ShowMessage (MSG_LINE_TOO_LONG);
       return true;
       }  // end of fail (line too long?)
       
@@ -844,7 +880,7 @@ bool readHexFile (const char * fName, const byte action)
     
   if (!gotEndOfFile)
     {
-    //ShowMessage (MSG_NO_END_OF_FILE_RECORD);
+    ShowMessage                     (MSG_NO_END_OF_FILE_RECORD);
     return true;
     }
 
@@ -859,7 +895,7 @@ bool readHexFile (const char * fName, const byte action)
     case verifyFlash:
        if (errors > 0)
           {
-          //ShowMessage (MSG_VERIFICATION_ERROR);
+          ShowMessage                     (MSG_VERIFICATION_ERROR);
           return true;
           }  // end if
        break;
@@ -956,7 +992,7 @@ void getSignature ()
       }  // end of signature found
     }  // end of for each signature
 
-  //ShowMessage (MSG_UNRECOGNIZED_SIGNATURE);
+  ShowMessage                     (MSG_UNRECOGNIZED_SIGNATURE);
   }  // end of getSignature
   
 void getFuseBytes ()
@@ -990,7 +1026,7 @@ bool updateFuses (const bool writeIt)
   // if no fuse, can't change it
   if (fusenumber == NO_FUSE)
     {
-//    ShowMessage (MSG_NO_BOOTLOADER_FUSE);   // maybe this doesn't matter?
+    ShowMessage (MSG_NO_BOOTLOADER_FUSE);   // maybe this doesn't matter?
     return false;  // ok return
     }
     
@@ -1016,7 +1052,7 @@ bool updateFuses (const bool writeIt)
       newval = 0;
     else
       {
-      //ShowMessage (MSG_BAD_START_ADDRESS);
+      ShowMessage                     (MSG_BAD_START_ADDRESS);
       return true;
       }
       
@@ -1068,7 +1104,7 @@ void burn_setup ()
   // breadboards.  use SPI_FULL_SPEED for better performance.
   while (!usdc.sd.begin (chipSelect, SPI_HALF_SPEED)) 
     {
-//    ShowMessage (MSG_NO_SD_CARD);
+    ShowMessage (MSG_NO_SD_CARD);
     delay (1000);
     }
   
@@ -1087,7 +1123,7 @@ bool chooseInputFile ()
   // check file would fit into device memory
   if (highestAddress > currentSignature.flashSize)
     {
-    //ShowMessage (MSG_FILE_TOO_LARGE_FOR_FLASH);
+    ShowMessage (MSG_FILE_TOO_LARGE_FOR_FLASH);
     return true; 
     }
   
@@ -1151,7 +1187,7 @@ void burn ()
  
   if (!startProgramming ())
     {
-//    ShowMessage (MSG_CANNOT_ENTER_PROGRAMMING_MODE);
+    ShowMessage (MSG_CANNOT_ENTER_PROGRAMMING_MODE);
     return;
     }  // end of could not enter programming mode
     
@@ -1161,7 +1197,7 @@ void burn ()
   // don't have signature? don't proceed
   if (foundSig == -1)
     {
-//    ShowMessage (MSG_CANNOT_FIND_SIGNATURE);
+    ShowMessage (MSG_CANNOT_FIND_SIGNATURE);
     return;
     }  // end of no signature
   
@@ -1169,8 +1205,8 @@ void burn ()
   stopProgramming ();
   delay (500);
   
-//  if (ok)
-//    ShowMessage (MSG_FLASHED_OK);
+  if (ok)
+    ShowMessage (MSG_FLASHED_OK);
 
 }  // end of loop
 

@@ -36,6 +36,8 @@
   uvar usdc;
 #endif
 
+byte burn_Message;
+
 boolean inProgrammingMode() {
 //  return !digitalRead(programmingModePin);
   return 1;  //temporary for debug

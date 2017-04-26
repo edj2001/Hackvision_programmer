@@ -135,25 +135,12 @@ const char Version [] = "1.25g";
 const unsigned int ENTER_PROGRAMMING_ATTEMPTS = 2;
 
 // bit banged SPI pins
-#ifdef __AVR_ATmega2560__
-  // Atmega2560
-  const byte MSPIM_SCK = 4;  // port G bit 5
-  const byte MSPIM_SS  = 5;  // port E bit 3
-  const byte BB_MISO   = 6;  // port H bit 3
-  const byte BB_MOSI   = 7;  // port H bit 4
-#elif defined(__AVR_ATmega1284P__)
-  // Atmega1284P
-  const byte MSPIM_SCK = 11;  // port D bit 3
-  const byte MSPIM_SS  = 12;  // port D bit 4
-  const byte BB_MISO   = 13;  // port D bit 5
-  const byte BB_MOSI   = 14;  // port D bit 6
-#else
   // Atmega328
   const byte MSPIM_SCK = 4;  // port D bit 4
   const byte MSPIM_SS  = 5;  // port D bit 5
   const byte BB_MISO   = 6;  // port D bit 6
   const byte BB_MOSI   = 7;  // port D bit 7
-#endif
+
 
 
 /*
@@ -461,6 +448,7 @@ void show7SegmentMessage (char * what)
 
 void ShowMessage (const byte which)
   {
+    burn_Message = which;
 /*
   // now flash an appropriate sequence
   switch (which)

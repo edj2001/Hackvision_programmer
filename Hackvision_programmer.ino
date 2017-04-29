@@ -37,6 +37,7 @@
 #endif
 
 byte burn_Message;
+char strBurnMessage[50];
 
 boolean inProgrammingMode() {
 //  return !digitalRead(programmingModePin);

@@ -58,7 +58,8 @@ void ui_displayResults(){
   //
   clrscr();
   displayTitles();
- 
+  printstr("\n");
+  printstr(strBurnMessage);
 }
 
 void ui_splash() {

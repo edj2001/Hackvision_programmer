@@ -129,6 +129,7 @@ SdFat sd;
 */
 //#include "programmer.h"
 //#include <EEPROM.h>
+#include <avr/pgmspace.h>
 
 const char Version [] = "1.25g";
 
@@ -449,39 +450,39 @@ void show7SegmentMessage (char * what)
 void ShowMessage (const byte which)
   {
     burn_Message = which;
-/*
+
   // now flash an appropriate sequence
   switch (which)
      {
       // problems with SD card or finding the file
-      case MSG_NO_SD_CARD:                      blink (errorLED, noLED, 1, 5); break;
-      case MSG_CANNOT_OPEN_FILE:                blink (errorLED, noLED, 2, 5); break;
+      case MSG_NO_SD_CARD:                      strcpy_P(strBurnMessage,PSTR("No SD Card found")); break;
+      case MSG_CANNOT_OPEN_FILE:                strcpy_P(strBurnMessage,PSTR("Cannot Open File")); break;
       
       // problems reading the .hex file
-      case MSG_LINE_TOO_LONG:                   blink (errorLED, workingLED, 1, 5); break;
-      case MSG_LINE_TOO_SHORT:                  blink (errorLED, workingLED, 2, 5); break;
-      case MSG_LINE_DOES_NOT_START_WITH_COLON:  blink (errorLED, workingLED, 3, 5); break;
-      case MSG_INVALID_HEX_DIGITS:              blink (errorLED, workingLED, 4, 5); break;
-      case MSG_BAD_SUMCHECK:                    blink (errorLED, workingLED, 5, 5); break;
-      case MSG_LINE_NOT_EXPECTED_LENGTH:        blink (errorLED, workingLED, 6, 5); break;
-      case MSG_UNKNOWN_RECORD_TYPE:             blink (errorLED, workingLED, 7, 5); break;
-      case MSG_NO_END_OF_FILE_RECORD:           blink (errorLED, workingLED, 8, 5); break;
-      
+      case MSG_LINE_TOO_LONG:                   strcpy_P(strBurnMessage,PSTR("Line too long")); break;
+      case MSG_LINE_TOO_SHORT:                  strcpy_P(strBurnMessage,PSTR("Line too short")); break;
+      case MSG_LINE_DOES_NOT_START_WITH_COLON:  strcpy_P(strBurnMessage,PSTR("Line does not start with colon")); break;
+      case MSG_INVALID_HEX_DIGITS:              strcpy_P(strBurnMessage,PSTR("Hex file invalid digits")); break;
+      case MSG_BAD_SUMCHECK:                    strcpy_P(strBurnMessage,PSTR("Bad sumcheck on file")); break;
+      case MSG_LINE_NOT_EXPECTED_LENGTH:        strcpy_P(strBurnMessage,PSTR("line not expected length")); break;
+      case MSG_UNKNOWN_RECORD_TYPE:             strcpy_P(strBurnMessage,PSTR("Unknown Record Type")); break;
+      case MSG_NO_END_OF_FILE_RECORD:           strcpy_P(strBurnMessage,PSTR("No end of file record")); break;
+
       // problems with the file contents
-      case MSG_FILE_TOO_LARGE_FOR_FLASH:        blink (errorLED, workingLED, 9, 5); break;
+      case MSG_FILE_TOO_LARGE_FOR_FLASH:        strcpy_P(strBurnMessage,PSTR("File too large")); break;
       
       // problems programming the chip
-      case MSG_CANNOT_ENTER_PROGRAMMING_MODE:  blink (errorLED, noLED, 3, 5); break;
-      case MSG_NO_BOOTLOADER_FUSE:             blink (errorLED, noLED, 4, 5); break;
-      case MSG_CANNOT_FIND_SIGNATURE:          blink (errorLED, noLED, 5, 5); break;
-      case MSG_UNRECOGNIZED_SIGNATURE:         blink (errorLED, noLED, 6, 5); break;
-      case MSG_BAD_START_ADDRESS:              blink (errorLED, noLED, 7, 5); break;
-      case MSG_VERIFICATION_ERROR:             blink (errorLED, noLED, 8, 5); break;
-      case MSG_FLASHED_OK:                     blink (readyLED, noLED, 3, 10); break;
-      
-     default:                                  blink (errorLED, 10, 10);  break;   // unknown error
+      case MSG_CANNOT_ENTER_PROGRAMMING_MODE:  strcpy_P(strBurnMessage,PSTR("Cannot enter programming")); break;
+      case MSG_NO_BOOTLOADER_FUSE:             strcpy_P(strBurnMessage,PSTR("No bootloader fuse")); break;
+      case MSG_CANNOT_FIND_SIGNATURE:          strcpy_P(strBurnMessage,PSTR("Cannot find Signature")); break;
+      case MSG_UNRECOGNIZED_SIGNATURE:         strcpy_P(strBurnMessage,PSTR("Unrecognized signature")); break;
+      case MSG_BAD_START_ADDRESS:              strcpy_P(strBurnMessage,PSTR("Bad Start Address")); break;
+      case MSG_VERIFICATION_ERROR:             strcpy_P(strBurnMessage,PSTR("Verification Error")); break;
+      case MSG_FLASHED_OK:                     strcpy_P(strBurnMessage,PSTR("Flashed OK")); break;
+
+     default:                                  strcpy_P(strBurnMessage,PSTR("Unknown burn error"));  break;   // unknown error
      }  // end of switch on which message 
-*/
+
   }  // end of ShowMessage
  
   

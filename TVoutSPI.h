@@ -271,6 +271,38 @@ void printstr(char *string)
  while(*string)
    chrout(*string++);
 }
+
+void printstr_P(const char * str)
+// print a string from PROGMEM
+// from http://gammon.com.au/progmem
+    // example usage
+    //printstr_P ((const char *) &descriptions [i]);
+{
+  char c;
+  if (!str) 
+    return;
+  while ((c = pgm_read_byte(str++)))
+    chrout (c);
+  
+}
+/*
+//***
+// Print a string from Program Memory directly to save RAM 
+void printProgStr (const char * str)
+{
+  char c;
+  if (!str) 
+    return;
+  while ((c = pgm_read_byte(str++)))
+    Serial.print (c);
+} // end of printProgStr
+*/
+    // example usage
+    //printProgStr ((const char *) &descriptions [i]);
+
+
+//***
+
 void gotoxy(int x, int y)
 {
   if (x < 0) x = 0;
@@ -399,7 +431,7 @@ void TVdelay_frame(unsigned int x) {
 
 void TVsetup(void)
 {
-  cli();
+  cli();  //temporarily disable interrupts
   UBRR0 = 0; // must be zero before enabling the transmitter
   XCK0_DDR  |= _BV(XCK0); // set XCK pin as output to enable master mode
   UCSR0C     = _BV (UMSEL00) | _BV (UMSEL01);  // SPI master mode
@@ -412,14 +444,18 @@ void TVsetup(void)
   ICR1       = _NTSC_CYCLES_SCANLINE;
   OCR1A      = _CYCLES_HSYNC;
   OCR1B      = _NTSC_CYCLES_OUTPUT_START - 79;
-  TIMSK1     = _BV(OCIE1B);
+  TIMSK1     = _BV(OCIE1B);  //Set Timer1 interrupt mask to allow Output Compare Interrupt
   TIMSK0     = 0; // turn timer0 off!
   SMCR       = _BV(SE); // allow IDLE sleep mode
-  sei();
+  sei();  //re-enable interrupts
 }
 
 
-
+void TVend(void)
+{
+  TIMSK1 &= ~(_BV(OCIE1B));  //turn off interrupts from Timer1 Output Compare 1B
+  //TODO:: do we need to disable SPI output on USART?  or will this just make a blank screen?
+}
 
 
 

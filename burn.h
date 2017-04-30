@@ -1146,17 +1146,13 @@ bool writeFlashContents ()
   if (readHexFile(name, writeToFlash))
     return false;
 
-#if CROSSROADS_PROGRAMMING_BOARD
-  show7SegmentMessage ("uF");
-#endif //  CROSSROADS_PROGRAMMING_BOARD
-
   // verify
   if (readHexFile(name, verifyFlash))
     return false;
 
   // now fix up fuses so we can boot    
   if (errors == 0)
-    updateFuses (true);
+    //updateFuses (true);
     
   return errors == 0;
   }  // end of writeFlashContents

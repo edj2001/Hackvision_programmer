@@ -432,13 +432,21 @@ void TVdelay_frame(unsigned int x) {
 void TVsetup(void)
 {
   cli();  //temporarily disable interrupts
+  //Save USART and timer settings to restore later
+  //Save_XCK0_DDR = XCK0_DDR;
+  //Save_TCCR1A = TCCR1A;
+  //Save_TCCR1B = TCCR1B;
+  //Save_ICR1 = ICR1;
+  
   UBRR0 = 0; // must be zero before enabling the transmitter
   XCK0_DDR  |= _BV(XCK0); // set XCK pin as output to enable master mode
   UCSR0C     = _BV (UMSEL00) | _BV (UMSEL01);  // SPI master mode
-  DDR_VID   |= _BV(VID_PIN);
-  DDR_SYNC  |= _BV(SYNC_PIN);
-  PORT_VID  &= ~_BV(VID_PIN);
-  PORT_SYNC |= _BV(SYNC_PIN);
+  
+  DDR_VID   |= _BV(VID_PIN);  //set video pin as output
+  DDR_SYNC  |= _BV(SYNC_PIN); //set sync pin as output
+  PORT_VID  &= ~_BV(VID_PIN); //set video pin low
+  PORT_SYNC |= _BV(SYNC_PIN); //set sync pin high
+  
   TCCR1A     = _BV(COM1A1) | _BV(COM1A0) | _BV(WGM11); // inverted fast pwm mode on timer 2
   TCCR1B     = _BV(WGM13) | _BV(WGM12) | _BV(CS10);
   ICR1       = _NTSC_CYCLES_SCANLINE;
@@ -453,8 +461,16 @@ void TVsetup(void)
 
 void TVend(void)
 {
+  cli();
+  TIMSK1 &= ~(_BV(OCIE1A));  //turn off interrupts from Timer1 Output Compare 1A
   TIMSK1 &= ~(_BV(OCIE1B));  //turn off interrupts from Timer1 Output Compare 1B
   //TODO:: do we need to disable SPI output on USART?  or will this just make a blank screen?
+  //XCK0_DDR = Save_XCK0_DDR;
+  //TCCR1A = Save_TCCR1A;
+  //TCCR1B = Save_TCCR1B;
+  //ICR1 = Save_ICR1;
+  sei();
+
 }
 
 

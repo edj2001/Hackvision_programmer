@@ -12,9 +12,11 @@
 
 #define enableBurningPin A2
 #define programmingModePin A3
-#define fireButton 2
-#define scrollUpButton 3
-#define scrollDownButton 4
+#define fireButton 10
+#define scrollUpButton 4
+#define scrollDownButton 5
+#define leftButton 3
+#define rightButton 2
 
 
 #define UseUnion
@@ -45,7 +47,9 @@ boolean inProgrammingMode() {
 }
 
 boolean enableBurning(void) {
-    return !digitalRead(enableBurningPin);
+    //return !digitalRead(enableBurningPin);
+  return 1;  //temporary for debug
+    
 }
 
 #include "burn.h"
@@ -99,15 +103,27 @@ void setup(){
   }
 
 void loop(){
-  if (inProgrammingMode()) ui_splash();
+  if (inProgrammingMode()) {
+    //TVsetup();
+    //ui_splash();
+    //TVend();
+  }
   if (inProgrammingMode()) findFiles();
-  if (inProgrammingMode()) ui();
+  if (inProgrammingMode()) {
+    TVsetup();
+    ui();
+    TVend();
+  }
   if (inProgrammingMode() && enableBurning()) 
   {
     strcpy(name,selectedFileName);
     burn();
   }
-  if (inProgrammingMode()) ui_displayResults();
+  if (inProgrammingMode()) {
+    TVsetup();
+    ui_displayResults();
+    TVend();    
+  }
   while (1){};
   //if (!inProgrammingMode()) sleep();
   

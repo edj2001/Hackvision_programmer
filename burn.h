@@ -472,7 +472,7 @@ void ShowMessage (const byte which)
       case MSG_FILE_TOO_LARGE_FOR_FLASH:        strcpy_P(strBurnMessage,PSTR("File too large")); break;
       
       // problems programming the chip
-      case MSG_CANNOT_ENTER_PROGRAMMING_MODE:  strcpy_P(strBurnMessage,PSTR("Cannot enter programming")); break;
+      case MSG_CANNOT_ENTER_PROGRAMMING_MODE:  strcpy_P(strBurnMessage,PSTR("Cannot enter programming mode")); break;
       case MSG_NO_BOOTLOADER_FUSE:             strcpy_P(strBurnMessage,PSTR("No bootloader fuse")); break;
       case MSG_CANNOT_FIND_SIGNATURE:          strcpy_P(strBurnMessage,PSTR("Cannot find Signature")); break;
       case MSG_UNRECOGNIZED_SIGNATURE:         strcpy_P(strBurnMessage,PSTR("Unrecognized signature")); break;
@@ -1068,8 +1068,8 @@ bool updateFuses (const bool writeIt)
 void burn_setup () 
   {
 
-  pinMode (startSwitch, INPUT);
-  digitalWrite (startSwitch, HIGH);
+  //pinMode (startSwitch, INPUT);
+  //digitalWrite (startSwitch, HIGH);
 
 /*  
 #if CROSSROADS_PROGRAMMING_BOARD
@@ -1152,7 +1152,9 @@ bool writeFlashContents ()
 
   // now fix up fuses so we can boot    
   if (errors == 0)
-    //updateFuses (true);
+    //we need this because the chip was erased and there is no
+    //bootloader any more, so must reset to start application.
+    updateFuses (true);
     
   return errors == 0;
   }  // end of writeFlashContents

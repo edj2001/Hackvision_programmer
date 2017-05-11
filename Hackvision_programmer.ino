@@ -6,6 +6,7 @@
 //#include <TVout.h>
 //TVout TV;
 
+// do not change the version of SDFat library used with this sketch!!
 // for SDFat library see: https://github.com/greiman/SdFat
 // modify #define USE_MULTIPLE_CARDS 1 in SDFatConfig.h to get rid of static cache definitions
 #include <SdFat.h>
